@@ -5,7 +5,8 @@
 
 ## Current projects:
 - 🔭 Developing "NeyroAPI-Library" - a framework for interacting with NeyroAPI
-  [github.com/rep0rt/nexus](https://github.com/rep0rt/nexus)
+  [github.com/NeyroTeam/NeyroAPI-Library](https://github.com/NeyroTeam/NeyroAPI-Library)
+  [github.com/NeyroTeam/NeyroAPI-Library-JS](https://github.com/NeyroTeam/NeyroAPI-Library-JS)
 
 ## Areas of expertise:
 React, Vue, frontend performance optimization
@@ -14,7 +15,8 @@ React, Vue, frontend performance optimization
 - 📫 rep0rt@neyrogen.online
 - 🌐 [rep0rt.neyrogen.online](https://rep0rt.neyrogen.online)
 
-## Interesting fact:<br>React was created in one night by Facebook engineer Jordan Walke in 2011.
+## Interesting fact:
+React was created in one night by Facebook engineer Jordan Walke in 2011.
 
 
 ## 🌐 Socials:
