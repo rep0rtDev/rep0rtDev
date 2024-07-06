@@ -1,5 +1,20 @@
 # 💫 About Me:
-# rep0rt<br><br>### A simple programmer from Russia specializing in web development<br><br>## Current projects:<br>- 🔭 Developing "NeyroAPI-Library" - a framework for interacting with NeyroAPI<br>  [github.com/rep0rt/nexus](https://github.com/rep0rt/nexus)<br><br>## Areas of expertise:<br>React, Vue, frontend performance optimization<br><br>## Contacts:<br>- 📫 rep0rt@neyrogen.online<br>- 🌐 [rep0rt.neyrogen.online](https://rep0rt.neyrogen.online)<br><br>## Interesting fact:<br>React was created in one night by Facebook engineer Jordan Walke in 2011.
+# rep0rt
+
+### A simple programmer from Russia specializing in web development
+
+## Current projects:
+- 🔭 Developing "NeyroAPI-Library" - a framework for interacting with NeyroAPI
+  [github.com/rep0rt/nexus](https://github.com/rep0rt/nexus)
+
+## Areas of expertise:
+React, Vue, frontend performance optimization
+
+## Contacts:
+- 📫 rep0rt@neyrogen.online
+- 🌐 [rep0rt.neyrogen.online](https://rep0rt.neyrogen.online)
+
+## Interesting fact:<br>React was created in one night by Facebook engineer Jordan Walke in 2011.
 
 
 ## 🌐 Socials:
