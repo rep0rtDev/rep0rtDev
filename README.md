@@ -4,9 +4,7 @@
 ### A simple programmer from Russia specializing in web development
 
 ## Current projects:
-- 🔭 Developing "NeyroAPI-Library" - a framework for interacting with NeyroAPI
-  [github.com/NeyroTeam/NeyroAPI-Library](https://github.com/NeyroTeam/NeyroAPI-Library)
-  [github.com/NeyroTeam/NeyroAPI-Library-JS](https://github.com/NeyroTeam/NeyroAPI-Library-JS)
+- 🔭 Developing "NeyroAPI-Library" - a framework for interacting with NeyroAPI<br>[github.com/NeyroTeam/NeyroAPI-Library](https://github.com/NeyroTeam/NeyroAPI-Library)<br>[github.com/NeyroTeam/NeyroAPI-Library-JS](https://github.com/NeyroTeam/NeyroAPI-Library-JS)
 
 ## Areas of expertise:
 React, Vue, frontend performance optimization
