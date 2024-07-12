@@ -1,0 +1,660 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Портфолио - rep0rt</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&display=swap');
+
+        :root {
+            --bg-color: #0d1117;
+            --text-color: #c9d1d9;
+            --accent-color: #58a6ff;
+            --secondary-color: #7ee787;
+            --tertiary-color: #ff7b72;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+
+        #loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--accent-color);
+            border-top: 5px solid var(--secondary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #content {
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+        }
+
+        #background-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+
+        .terminal-window {
+            width: 90%;
+            max-width: 900px;
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+            background-color: rgba(22, 27, 34, 0.8);
+            border: 1px solid var(--accent-color);
+            position: relative;
+            z-index: 10;
+            backdrop-filter: blur(10px);
+            transform: perspective(1000px) rotateX(0deg);
+            transition: transform 0.5s ease;
+        }
+
+        .terminal-header {
+            background-color: rgba(22, 27, 34, 0.9);
+            padding: 0.75rem 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: move;
+        }
+
+        .terminal-title {
+            color: var(--text-color);
+            font-size: 0.9rem;
+        }
+
+        .terminal-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .terminal-button {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .terminal-button:hover {
+            transform: scale(1.2);
+        }
+
+        .terminal-button.close { background-color: #f85149; }
+        .terminal-button.minimize { background-color: #ffa657; }
+        .terminal-button.maximize { background-color: #7ee787; }
+
+        .terminal-body {
+            padding: 1rem;
+            height: 500px;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-color) var(--bg-color);
+        }
+
+        .terminal-body::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .terminal-body::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+
+        .terminal-body::-webkit-scrollbar-thumb {
+            background-color: var(--accent-color);
+            border-radius: 20px;
+        }
+
+        .line {
+            margin-bottom: 0.5rem;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.3s ease;
+        }
+
+        .prompt {
+            color: var(--accent-color);
+            font-weight: bold;
+        }
+
+        .command {
+            color: var(--text-color);
+        }
+
+        .output {
+            color: var(--secondary-color);
+        }
+
+        .input-line {
+            display: flex;
+            align-items: center;
+            margin-top: 1rem;
+        }
+
+        .input-prompt {
+            color: var(--accent-color);
+            margin-right: 0.5rem;
+        }
+
+        .input-field {
+            flex-grow: 1;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 1rem;
+            outline: none;
+        }
+
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+        }
+
+        .skill-item {
+            background-color: rgba(22, 27, 34, 0.8);
+            border: 1px solid var(--accent-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            text-align: center;
+            width: 150px;
+            transition: all 0.3s ease;
+        }
+
+        .skill-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(88, 166, 255, 0.2);
+        }
+
+        .skill-icon {
+            font-size: 2rem;
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .skill-name {
+            color: var(--text-color);
+            font-weight: bold;
+        }
+
+        .skill-level {
+            margin-top: 0.5rem;
+            height: 5px;
+            background-color: #30363d;
+            border-radius: 2.5px;
+            overflow: hidden;
+        }
+
+        .skill-fill {
+            height: 100%;
+            background-image: linear-gradient(90deg, var(--accent-color), var(--secondary-color));
+            width: 0;
+            transition: width 1s ease-in-out;
+        }
+
+        .projects-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .project {
+            border: 1px solid var(--accent-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background-color: rgba(22, 27, 34, 0.8);
+            animation: fadeIn 0.5s ease forwards;
+            opacity: 0;
+            transform: perspective(1000px) rotateY(0deg);
+        }
+
+        .project:hover {
+            transform: perspective(1000px) rotateY(10deg);
+            box-shadow: 0 5px 15px rgba(88, 166, 255, 0.2);
+        }
+
+        @keyframes fadeIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .project h3 {
+            color: var(--accent-color);
+            margin-bottom: 0.5rem;
+        }
+
+        .project p {
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .project-links {
+            font-size: 0.8rem;
+        }
+
+        .project-links a {
+            color: var(--secondary-color);
+            text-decoration: none;
+            margin-right: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .project-links a:hover {
+            color: var(--tertiary-color);
+        }
+
+        .project-window {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.9);
+            background-color: rgba(22, 27, 34, 0.95);
+            border: 2px solid var(--accent-color);
+            border-radius: 0.5rem;
+            padding: 1rem;
+            z-index: 1000;
+            display: none;
+            max-width: 80%;
+            max-height: 80%;
+            overflow-y: auto;
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+
+        .project-window.active {
+            transform: translate(-50%, -50%) scale(1);
+            opacity: 1;
+        }
+
+        .project-window h2 {
+            color: var(--accent-color);
+            margin-bottom: 1rem;
+        }
+
+        .project-window p {
+            margin-bottom: 0.5rem;
+        }
+
+        .project-window a {
+            color: var(--secondary-color);
+            text-decoration: none;
+        }
+
+        .project-window a:hover {
+            text-decoration: underline;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            color: var(--accent-color);
+            cursor: pointer;
+            font-size: 1.5rem;
+            transition: transform 0.3s ease;
+        }
+
+        .close-button:hover {
+            transform: rotate(90deg);
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+        }
+    </style>
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader"></div>
+    </div>
+
+    <div id="content">
+        <div id="particles-js"></div>
+        <div class="terminal-window" id="terminal-window">
+            <div class="terminal-header" id="terminal-header">
+                <div class="terminal-buttons">
+                    <div class="terminal-button close"></div>
+                    <div class="terminal-button minimize"></div>
+                    <div class="terminal-button maximize"></div>
+                </div>
+                <div class="terminal-title">rep0rt@portfolio:~</div>
+            </div>
+            <div class="terminal-body" id="terminal-body">
+                <!-- Здесь будет выводиться содержимое терминала -->
+            </div>
+            <div class="input-line">
+                <span class="input-prompt">$</span>
+                <input type="text" class="input-field" id="command-input" placeholder="Введите команду...">
+            </div>
+        </div>
+    </div>
+
+    <div class="project-window" id="project-window">
+        <span class="close-button" onclick="closeProjectWindow()">×</span>
+        <h2 id="project-title"></h2>
+        <p id="project-description"></p>
+        <p>Ссылки:</p>
+        <ul id="project-links"></ul>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        const terminalBody = document.getElementById('terminal-body');
+        const commandInput = document.getElementById('command-input');
+
+        const commands = {
+            'help': 'Доступные команды: help, about, skills, projects, contact, clear',
+            'about': 'Привет, я rep0rt, веб-разработчик с страстью к созданию удивительных веб-приложений и не только!',
+            'skills': showSkills,
+            'projects': showProjects,
+            'contact': 'Свяжитесь со мной:rep0rt@neyrogen.online | github.com/rep0rtDev',
+            'clear': clearTerminal
+        };
+
+        const skills = [
+            { name: 'HTML', level: 90, icon: 'fab fa-html5' },
+            { name: 'CSS', level: 85, icon: 'fab fa-css3-alt' },
+            { name: 'JavaScript', level: 60, icon: 'fab fa-js-square' },
+            { name: 'Node.js', level: 47, icon: 'fab fa-node-js' }
+        ];
+
+        const projects = [
+            {
+                name: 'NeyroGen - Дискорд бот',
+                description: 'Многофункциональный AI дискорд бот, написанный на discord.js',
+                links: [
+                    { name: 'GitHub', url: 'https://github.com/NeyroTeam/NeyroGen' },
+                    { name: 'Discord', url: 'https://discord.gg/aAkWjaHf4u' }
+                ]
+            },
+            {
+                name: 'NeyroAPI-Library - Библиотека на js/py',
+                description: 'Библиотека для взаимодействия с NeyroAPI',
+                links: [
+                    { name: 'GitHub (py)', url: 'https://github.com/NeyroTeam/NeyroAPI-Library-PY' },
+                    { name: 'GitHub (js)', url: 'https://github.com/NeyroTeam/NeyroAPI-Library-JS' }
+                ]
+            },
+            {
+                name: 'Portfolio - Сайт портфолио',
+                description: 'Мой личный сайт портфолио написанный на HTML + CSS + JS',
+                links: [
+                    { name: 'GitHub', url: 'https://github.com/rep0rtDev/rep0rtDev' }
+                ]
+            }
+        ];
+
+        function addLine(content, className = '') {
+            const line = document.createElement('div');
+            line.className = `line ${className}`;
+            line.style.opacity = '0';
+            line.style.transform = 'translateY(10px)';
+            terminalBody.appendChild(line);
+
+            setTimeout(() => {
+                line.style.opacity = '1';
+                line.style.transform = 'translateY(0)';
+                line.innerHTML = content;
+            }, 50);
+
+            terminalBody.scrollTop = terminalBody.scrollHeight;
+        }
+
+        function executeCommand(command) {
+            addLine(`<span class="prompt">$</span> <span class="command">${command}</span>`);
+            
+            if (commands.hasOwnProperty(command)) {
+                if (typeof commands[command] === 'function') {
+                    commands[command]();
+                } else {
+                    addLine(commands[command], 'output');
+                }
+            } else {
+                addLine(`Команда не найдена: ${command}. Введите 'help' для списка команд.`, 'output');
+            }
+        }
+
+function showSkills() {
+    addLine('Мои навыки:', 'output');
+    const skillsContainer = document.createElement('div');
+    skillsContainer.className = 'skills-container';
+    skills.forEach(skill => {
+        const skillItem = document.createElement('div');
+        skillItem.className = 'skill-item';
+        skillItem.innerHTML = `
+            <div class="skill-icon"><i class="${skill.icon}"></i></div>
+            <div class="skill-name">${skill.name}</div>
+            <div class="skill-level">
+                <div class="skill-fill" style="width: 0%"></div>
+            </div>
+            <div class="skill-percentage">${skill.level}%</div>
+        `;
+        skillsContainer.appendChild(skillItem);
+    });
+    terminalBody.appendChild(skillsContainer);
+    animateSkillBars();
+}
+
+function animateSkillBars() {
+    const skillItems = terminalBody.querySelectorAll('.skill-item');
+    skillItems.forEach((item, index) => {
+        const fill = item.querySelector('.skill-fill');
+        const percentage = item.querySelector('.skill-percentage');
+        const skill = skills[index];
+        setTimeout(() => {
+            fill.style.width = `${skill.level}%`;
+            percentage.textContent = `${skill.level}%`;
+        }, index * 200);
+    });
+}
+
+        function showProjects() {
+            addLine('Мои проекты:', 'output');
+            const projectsContainer = document.createElement('div');
+            projectsContainer.className = 'projects-container';
+            projects.forEach((project, index) => {
+                const projectElement = document.createElement('div');
+                projectElement.className = 'project';
+                projectElement.innerHTML = `
+                    <h3>${project.name}</h3>
+                    <p>${project.description.substring(0, 100)}...</p>
+                    <div class="project-links">
+                        ${project.links.map(link => `<a href="${link.url}" target="_blank">${link.name}</a>`).join(' | ')}
+                    </div>
+                `;
+                projectElement.style.animationDelay = `${index * 0.1}s`;
+                projectElement.onclick = () => showProjectDetails(project);
+                projectsContainer.appendChild(projectElement);
+            });
+            terminalBody.appendChild(projectsContainer);
+        }
+
+        function showProjectDetails(project) {
+            const projectWindow = document.getElementById('project-window');
+            const projectTitle = document.getElementById('project-title');
+            const projectDescription = document.getElementById('project-description');
+            const projectLinks = document.getElementById('project-links');
+
+            projectTitle.textContent = project.name;
+            projectDescription.textContent = project.description;
+            projectLinks.innerHTML = '';
+            project.links.forEach(link => {
+                const li = document.createElement('li');
+                const a = document.createElement('a');
+                a.href = link.url;
+                a.textContent = link.name;
+                a.target = '_blank';
+                li.appendChild(a);
+                projectLinks.appendChild(li);
+            });
+
+            projectWindow.style.display = 'block';
+            setTimeout(() => {
+                projectWindow.classList.add('active');
+            }, 50);
+        }
+
+        function closeProjectWindow() {
+            const projectWindow = document.getElementById('project-window');
+            projectWindow.classList.remove('active');
+            setTimeout(() => {
+                projectWindow.style.display = 'none';
+            }, 300);
+        }
+
+        function clearTerminal() {
+            terminalBody.innerHTML = '';
+            addLine('Терминал очищен.', 'output');
+        }
+
+        function typeWriter(text, element, speed = 50) {
+            let i = 0;
+            function type() {
+                if (i < text.length) {
+                    element.innerHTML += text.charAt(i);
+                    i++;
+                    setTimeout(type, speed);
+                }
+            }
+            type();
+        }
+
+        commandInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                const command = this.value.trim().toLowerCase();
+                if (command) {
+                    executeCommand(command);
+                    this.value = '';
+                }
+            }
+        });
+
+        // Drag functionality
+        const terminalWindow = document.getElementById('terminal-window');
+        const terminalHeader = document.getElementById('terminal-header');
+        let isDragging = false;
+        let currentX;
+        let currentY;
+        let initialX;
+        let initialY;
+        let xOffset = 0;
+        let yOffset = 0;
+
+        terminalHeader.addEventListener('mousedown', dragStart);
+        document.addEventListener('mousemove', drag);
+        document.addEventListener('mouseup', dragEnd);
+
+        function dragStart(e) {
+            initialX = e.clientX - xOffset;
+            initialY = e.clientY - yOffset;
+
+            if (e.target === terminalHeader) {
+                isDragging = true;
+            }
+        }
+
+        function drag(e) {
+            if (isDragging) {
+                e.preventDefault();
+                currentX = e.clientX - initialX;
+                currentY = e.clientY - initialY;
+
+                xOffset = currentX;
+                yOffset = currentY;
+
+                setTranslate(currentX, currentY, terminalWindow);
+            }
+        }
+
+        function dragEnd(e) {
+            initialX = currentX;
+            initialY = currentY;
+
+            isDragging = false;
+        }
+
+        function setTranslate(xPos, yPos, el) {
+            el.style.transform = `translate3d(${xPos}px, ${yPos}px, 0) perspective(1000px) rotateX(0deg)`;
+        }
+
+        // Инициализация
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                document.getElementById('loading-screen').style.display = 'none';
+                document.getElementById('content').style.opacity = '1';
+                
+                const welcomeMessage = document.createElement('div');
+                welcomeMessage.className = 'line output';
+                terminalBody.appendChild(welcomeMessage);
+                typeWriter('Добро пожаловать в интерактивное портфолио rep0rt!', welcomeMessage);
+                
+                addLine('Введите "help" для списка доступных команд.', 'output');
+            }, 2000);
+        });
+
+        // Particles.js
+        particlesJS('particles-js', {
+            particles: {
+                number: { value: 80, density: { enable: true, value_area: 800 } },
+                color: { value: '#58a6ff' },
+                shape: { type: 'circle' },
+                opacity: { value: 0.5, random: false },
+                size: { value: 3, random: true },
+                line_linked: { enable: true, distance: 150, color: '#58a6ff', opacity: 0.4, width: 1 },
+                move: { enable: true, speed: 6, direction: 'none', random: false, straight: false, out_mode: 'out', bounce: false }
+            },
+            interactivity: {
+                detect_on: 'canvas',
+                events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                modes: { repulse: { distance: 100, duration: 0.4 }, push: { particles_nb: 4 } }
+            },
+            retina_detect: true
+        });
+    </script>
+</body>
+</html>
