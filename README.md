@@ -16,7 +16,7 @@ Experienced web developer specializing in scalable, high-performance application
 - **Backend:** Node.js (Express, Fastify, Hono), Python (FastAPI, Flask, AIOHTTP)
 - **Databases:** MongoDB, MySQL, MariaDB, Redis, Supabase
 - **Infrastructure:** Docker, Nginx, AWS, Azure, Google Cloud, Netlify, Vercel, Cloudflare
- **Messaging & Auth:** RabbitMQ, JWT
+- **Messaging & Auth:** RabbitMQ, JWT
 - **Other:** Web3.js, CI/CD, REST API design, Figma
 
 ---
